@@ -35,21 +35,19 @@ int main()
   textureBee.loadFromFile("assets/graphics/bee.png");
   Sprite spriteBee;
   spriteBee.setTexture(textureBee);
-  bool beeActive = false;
-   
+  
   //clouds
   Texture textureCloud;
   textureCloud.loadFromFile("assets/graphics/cloud.png");
   Sprite spriteCloud;
   spriteCloud.setTexture(textureCloud);
-  spriteCloud.setPosition(0,250);
+
+  int cloud_y_position = 100;
+  spriteCloud.setPosition(-200, cloud_y_position);
 
   int off_the_screen_position_x = 2000;
-  int bee_y_position = 250;
+  int bee_y_position = 500;
   spriteBee.setPosition(off_the_screen_position_x, bee_y_position);
-  
-  bool cloudActive = false;
-  float cloudSpeed = 0.0f;
    
   Clock clock;
    
@@ -62,10 +60,18 @@ int main()
       int beeSpeed = std::experimental::randint(200,400); 
       int bee_x_position = spriteBee.getPosition().x - (beeSpeed * dt.asSeconds());
       spriteBee.setPosition(bee_x_position, bee_y_position);	 
-      if (spriteBee.getPosition().x < 1){
-	spriteBee.setPosition(2000, 250);
+
+      if (spriteBee.getPosition().x < -100){
+	spriteBee.setPosition(off_the_screen_position_x, 250);
       }
 
+      int cloudSpeed = std::experimental::randint(200,400); 
+      int cloud_x_position = spriteCloud.getPosition().x - (cloudSpeed * dt.asSeconds());
+      spriteCloud.setPosition(cloud_x_position, cloud_y_position);	 
+
+      if (spriteCloud.getPosition().x < -300){
+	spriteCloud.setPosition(off_the_screen_position_x, cloud_y_position);
+      }
       
       //clear previous frame
       window.clear();
