@@ -53,6 +53,35 @@ int main()
   Clock clock;
 
   bool paused = true;
+
+  int score = 0;
+
+  sf::Text messageText;
+  sf::Text scoreText;
+
+  Font font;
+  font.loadFromFile("assets/fonts/KOMIKAP_.ttf");
+
+  messageText.setFont(font);
+  scoreText.setFont(font);
+
+  messageText.setString("Press Enter to start!");
+  scoreText.setString("Score = 0");
+
+  messageText.setCharacterSize(75);
+  scoreText.setCharacterSize(100);
+
+  messageText.setFillColor(Color::White);
+  scoreText.setFillColor(Color::White);
+
+  //Position the text
+  FloatRect textRect = messageText.getLocalBounds();
+  messageText.setOrigin(textRect.left +
+			textRect.width / 2.0f,
+			textRect.top +
+			textRect.height / 2.0f);
+  messageText.setPosition(1920 / 2.0f, 1080 / 2.0f);
+  scoreText.setPosition(20,20);
   
   while(window.isOpen())
     {
@@ -63,7 +92,7 @@ int main()
       }
 
       if(!paused){
-
+	
 	Time dt = clock.restart();
 	
 	int beeSpeed = std::experimental::randint(200,400); 
@@ -81,10 +110,13 @@ int main()
 	if (spriteCloud.getPosition().x < -300){
 	  spriteCloud.setPosition(off_the_screen_position_x, cloud_y_position);
 	}
+
+	std::stringstream ss;
+	ss << "Score = " << score;
+	scoreText.setString(ss.str());
 	
       }
-	
-      
+
       
       //clear previous frame
       window.clear();
@@ -95,6 +127,12 @@ int main()
       window.draw(spriteCloud);
       window.draw(spriteTree);
       window.draw(spriteBee);
+
+      window.draw(scoreText);
+      if(paused)
+	{
+	  window.draw(messageText);
+	}
        
       //draw new frame
       window.display();
