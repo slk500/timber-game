@@ -82,18 +82,55 @@ int main()
 			textRect.height / 2.0f);
   messageText.setPosition(1920 / 2.0f, 1080 / 2.0f);
   scoreText.setPosition(20,20);
-  
+
+  //time bar
+  RectangleShape timeBar;
+  float timeBarStartWidth = 400;
+  float timeBarHeight = 80;
+  timeBar.setSize(Vector2f(timeBarStartWidth, timeBarHeight));
+  timeBar.setFillColor(Color::Red);
+  timeBar.setPosition((1920 / 2) - timeBarStartWidth / 2, 980);
+
+  Time gameTimeTotal;
+  float timeRemaining = 6.0f;
+  float timeBarWitdhPerSecond = timeBarStartWidth / timeRemaining;
+    
   while(window.isOpen())
     {
       exit_game_on_kbd_escape();
 
       if(Keyboard::isKeyPressed(Keyboard::Return)){
 	paused = false;
-      }
 
+	//reset the time and the score
+	score = 0;
+	timeRemaining = 5;
+      }
+      
       if(!paused){
 	
 	Time dt = clock.restart();
+	
+	//substract from the amout of time remaining
+	timeRemaining -= dt.asSeconds();
+	//size up the time bar
+	timeBar.setSize(Vector2f(timeBarWitdhPerSecond *
+				 timeRemaining, timeBarHeight));
+
+	if(timeRemaining <= 0.0f)
+	  {
+	    paused = true;
+
+	    messageText.setString("Out of time");
+
+	    FloatRect textRect = messageText.getLocalBounds();
+	    messageText.setOrigin(textRect.left +
+				  textRect.width / 2.0f,
+				  textRect.top +
+				  textRect.height / 2.0f);
+	    messageText.setPosition(1920 / 2.0f, 1080 / 2.0f);
+
+	  }
 	
 	int beeSpeed = std::experimental::randint(200,400); 
 	int bee_x_position = spriteBee.getPosition().x - (beeSpeed * dt.asSeconds());
@@ -116,7 +153,6 @@ int main()
 	scoreText.setString(ss.str());
 	
       }
-
       
       //clear previous frame
       window.clear();
@@ -129,6 +165,9 @@ int main()
       window.draw(spriteBee);
 
       window.draw(scoreText);
+
+      window.draw(timeBar);
+      
       if(paused)
 	{
 	  window.draw(messageText);
