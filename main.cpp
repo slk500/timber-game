@@ -15,6 +15,14 @@ void exit_game_on_kbd_escape(){
   
 }
 
+//function declarations
+void updateBranches(int seed);
+const int NUM_BRANCHES = 6;
+Sprite branches[NUM_BRANCHES];
+
+enum class side { LEFT, RIGHT, NONE };
+side branchPosition[NUM_BRANCHES];
+
 int main()
 {
   Texture textureBackground;
@@ -46,10 +54,22 @@ int main()
   int cloud_y_position = 100;
   spriteCloud.setPosition(-200, cloud_y_position);
 
-  int off_the_screen_position_x = 2000;
+  int off_the_screen_position = 2000;
   int bee_y_position = 500;
-  spriteBee.setPosition(off_the_screen_position_x, bee_y_position);
-   
+  spriteBee.setPosition(off_the_screen_position, bee_y_position);
+
+  //prepare 6 branches
+  Texture textureBranch;
+  textureBranch.loadFromFile("assets/graphics/branch.png");
+
+  for (int i = 0; i < NUM_BRANCHES; ++i) {
+    branches[i].setTexture(textureBranch);
+    branches[i].setPosition(off_the_screen_position, off_the_screen_position);
+
+    branches[i].setOrigin(220, 20);
+  }
+
+  
   Clock clock;
 
   bool paused = true;
@@ -94,7 +114,8 @@ int main()
   Time gameTimeTotal;
   float timeRemaining = 6.0f;
   float timeBarWitdhPerSecond = timeBarStartWidth / timeRemaining;
-    
+  
+  
   while(window.isOpen())
     {
       exit_game_on_kbd_escape();
@@ -137,7 +158,7 @@ int main()
 	spriteBee.setPosition(bee_x_position, bee_y_position);	 
 
 	if (spriteBee.getPosition().x < -100){
-	  spriteBee.setPosition(off_the_screen_position_x, 250);
+	  spriteBee.setPosition(off_the_screen_position, 250);
 	}
 	
 	int cloudSpeed = std::experimental::randint(200,400); 
@@ -145,12 +166,34 @@ int main()
 	spriteCloud.setPosition(cloud_x_position, cloud_y_position);	 
 	
 	if (spriteCloud.getPosition().x < -300){
-	  spriteCloud.setPosition(off_the_screen_position_x, cloud_y_position);
+	  spriteCloud.setPosition(off_the_screen_position, cloud_y_position);
 	}
 
 	std::stringstream ss;
 	ss << "Score = " << score;
 	scoreText.setString(ss.str());
+
+	//update the branch sprites
+	for (int i = 0; i < NUM_BRANCHES; ++i) {
+	    
+	  float height = i * 150;
+	  
+	  if(branchPosition[i] == side::LEFT) {
+
+	    branches[i].setPosition(610, height);
+	    branches[i].setRotation(180);
+	  }
+	  else if (branchPosition[i] == side::RIGHT)
+	    {
+	      branches[i].setPosition(1330, height);
+	      branches[i].setRotation(0);
+	    }
+	  else {
+	    branches[i].setPosition(3000, height);
+	  }
+	  
+	}
+	
 	
       }
       
@@ -161,6 +204,12 @@ int main()
       window.draw(spriteBackground);
 
       window.draw(spriteCloud);
+
+      for (int i = 0; i < NUM_BRANCHES; ++i) {
+	window.draw(branches[i]);
+      }
+
+
       window.draw(spriteTree);
       window.draw(spriteBee);
 
@@ -178,4 +227,30 @@ int main()
     }
    
   return 0;  
+}
+
+void updateBranches(int seed)
+{
+  for (int i = NUM_BRANCHES - 1; i > 0; i--) {
+    branchPosition[i] = branchPosition[i - 1];
+  }
+
+  srand((int)time(0) + seed);
+  int r = (rand() % 5);
+  switch(r)
+    {
+    case 0:
+      branchPosition[0] = side::LEFT;
+      break;
+
+    case 1:
+      branchPosition[0] = side::RIGHT;
+      break;
+
+    default:
+      branchPosition[0] = side::NONE;
+      break;
+
+    }
+  
 }
